@@ -133,3 +133,7 @@ npm run test -w server
   ```
 - Si el puerto 4000 o 5173 está ocupado, cambia `PORT` en `server/.env` y/o puerto de Vite en `apps/frontend/vite.config.ts`.
 - Si Prisma no encuentra la BD, confirma que `DATABASE_URL` quede exactamente como `file:./dev.db` en `server/.env`.
+
+
+## Manual de usuario
+- Consulta la guía operativa completa en `docs/MANUAL_USUARIO.md`.
