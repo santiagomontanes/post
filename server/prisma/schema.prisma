@@ -7,57 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  SELLER
-}
-
-enum StorageType {
-  SSD
-  HDD
-  M2
-}
-
-enum PhysicalState {
-  A
-  B
-  C
-}
-
-enum FunctionalState {
-  OK
-  OBSERVACION
-}
-
-enum StockStatus {
-  DISPONIBLE
-  RESERVADO
-  VENDIDO
-  DEVUELTO
-}
-
-enum PaymentMethod {
-  EFECTIVO
-  TRANSFERENCIA
-  TARJETA
-  MIXTO
-}
-
-enum MovementType {
-  INGRESO
-  EGRESO
-}
-
 model User {
-  id           String    @id @default(cuid())
-  name         String
-  email        String    @unique
-  passwordHash String
-  role         Role      @default(SELLER)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  sales        Sale[]
-  audits       AuditLog[]
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  passwordHash  String
+  role          String         @default("SELLER")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  sales         Sale[]
+  audits        AuditLog[]
+  cashMovements CashMovement[]
 }
 
 model Customer {
@@ -71,82 +31,82 @@ model Customer {
 }
 
 model Product {
-  id                    String          @id @default(cuid())
-  sku                   String          @unique
-  brand                 String
-  model                 String
-  serial                String          @unique
-  cpu                   String
-  ramGb                 Int
-  storageType           StorageType
-  storageGb             Int
-  screenInches          Float
-  resolution            String
-  touch                 Boolean         @default(false)
-  batteryState          String
-  batteryHoursEstimate  Float
-  physicalState         PhysicalState
-  functionalState       FunctionalState
-  purchasePrice         Float
-  salePrice             Float
-  supplier              String?
-  purchaseDate          DateTime?
-  entryDate             DateTime        @default(now())
-  location              String
-  notes                 String?
-  photos                String?
-  warrantyMonths        Int             @default(3)
-  stockStatus           StockStatus     @default(DISPONIBLE)
-  category              String          @default("LAPTOP")
-  quantity              Int             @default(1)
-  reservedUntil         DateTime?
-  saleItems             SaleItem[]
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
+  id                   String     @id @default(cuid())
+  sku                  String     @unique
+  brand                String
+  model                String
+  serial               String     @unique
+  cpu                  String
+  ramGb                Int
+  storageType          String
+  storageGb            Int
+  screenInches         Float
+  resolution           String
+  touch                Boolean    @default(false)
+  batteryState         String
+  batteryHoursEstimate Float
+  physicalState        String
+  functionalState      String
+  purchasePrice        Float
+  salePrice            Float
+  supplier             String?
+  purchaseDate         DateTime?
+  entryDate            DateTime   @default(now())
+  location             String
+  notes                String?
+  photos               String?
+  warrantyMonths       Int        @default(3)
+  stockStatus          String     @default("DISPONIBLE")
+  category             String     @default("LAPTOP")
+  quantity             Int        @default(1)
+  reservedUntil        DateTime?
+  saleItems            SaleItem[]
+  createdAt            DateTime   @default(now())
+  updatedAt            DateTime   @updatedAt
 }
 
 model Sale {
-  id                 String        @id @default(cuid())
-  invoiceNumber      String        @unique
-  userId             String
-  customerId         String?
-  subtotal           Float
-  discount           Float         @default(0)
-  taxPercent         Float         @default(0)
-  taxAmount          Float         @default(0)
-  total              Float
-  paymentMethod      PaymentMethod
-  paymentDetails     String?
-  createdAt          DateTime      @default(now())
-  user               User          @relation(fields: [userId], references: [id])
-  customer           Customer?     @relation(fields: [customerId], references: [id])
-  items              SaleItem[]
-  movements          CashMovement[]
+  id             String         @id @default(cuid())
+  invoiceNumber  String         @unique
+  userId         String
+  customerId     String?
+  subtotal       Float
+  discount       Float          @default(0)
+  taxPercent     Float          @default(0)
+  taxAmount      Float          @default(0)
+  total          Float
+  paymentMethod  String
+  paymentDetails String?
+  createdAt      DateTime       @default(now())
+  user           User           @relation(fields: [userId], references: [id])
+  customer       Customer?      @relation(fields: [customerId], references: [id])
+  items          SaleItem[]
+  movements      CashMovement[]
 }
 
 model SaleItem {
-  id            String   @id @default(cuid())
+  id            String  @id @default(cuid())
   saleId        String
   productId     String
-  quantity      Int      @default(1)
+  quantity      Int     @default(1)
   unitPrice     Float
   purchasePrice Float
   total         Float
-  sale          Sale     @relation(fields: [saleId], references: [id], onDelete: Cascade)
-  product       Product  @relation(fields: [productId], references: [id])
+  sale          Sale    @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  product       Product @relation(fields: [productId], references: [id])
 }
 
 model CashMovement {
-  id          String       @id @default(cuid())
-  type        MovementType
+  id          String   @id @default(cuid())
+  type        String
   category    String
   concept     String
   amount      Float
-  date        DateTime     @default(now())
+  date        DateTime @default(now())
   saleId      String?
   createdById String
-  createdBy   User         @relation(fields: [createdById], references: [id])
-  sale        Sale?        @relation(fields: [saleId], references: [id])
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  sale        Sale?    @relation(fields: [saleId], references: [id])
 }
 
 model CashClosing {
@@ -162,24 +122,24 @@ model CashClosing {
 }
 
 model Setting {
-  id            String @id @default(cuid())
-  businessName  String @default("Sistetecni")
+  id            String  @id @default(cuid())
+  businessName  String  @default("Sistetecni")
   businessTaxId String?
   businessPhone String?
   businessEmail String?
   businessAddr  String?
-  invoicePrefix String @default("SIS")
-  currentNumber Int    @default(1)
-  ivaPercent    Float  @default(0)
+  invoicePrefix String  @default("SIS")
+  currentNumber Int     @default(1)
+  ivaPercent    Float   @default(0)
 }
 
 model AuditLog {
-  id         String   @id @default(cuid())
-  entity     String
-  entityId   String
-  action     String
-  details    String?
-  createdAt  DateTime @default(now())
-  createdBy  String
-  user       User     @relation(fields: [createdBy], references: [id])
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+  createdBy String
+  user      User     @relation(fields: [createdBy], references: [id])
 }
