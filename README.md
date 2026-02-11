@@ -79,3 +79,57 @@ npm run test -w server
 ## Notas
 - Todo funciona offline en SQLite.
 - Para producción local en Windows: usar `npm run build` y levantar backend con `npm run start -w server`.
+
+
+## Configuración del entorno (Windows 10/11 paso a paso)
+1. Instala herramientas base:
+   - Node.js LTS 20+ (incluye npm).
+   - Git for Windows.
+2. Clona el repo y entra a la carpeta:
+   ```bash
+   git clone <tu-repo>.git
+   cd post
+   ```
+3. Crea variables de entorno:
+   ```bash
+   copy server\.env.example server\.env
+   copy .env.example apps\frontend\.env
+   ```
+4. Verifica/ajusta variables:
+   - `server/.env`
+     - `DATABASE_URL="file:./dev.db"`
+     - `JWT_SECRET="una_clave_segura"`
+     - `PORT=4000`
+   - `apps/frontend/.env`
+     - `VITE_API_URL="http://localhost:4000/api"`
+5. Instala dependencias:
+   ```bash
+   npm install
+   ```
+6. Ejecuta migraciones y carga datos iniciales:
+   ```bash
+   npm run prisma:migrate -w server
+   npm run prisma:seed -w server
+   ```
+7. Levanta backend y frontend:
+   ```bash
+   npm run dev
+   ```
+8. Abre en el navegador:
+   - Frontend: `http://localhost:5173`
+   - API: `http://localhost:4000`
+   - Swagger: `http://localhost:4000/api/docs`
+
+### Credenciales iniciales
+- Email: `admin@sistetecni.local`
+- Password: `Admin123*`
+
+### Solución de problemas rápida
+- Si `npm install` falla por red/proxy corporativo, configura npm:
+  ```bash
+  npm config set registry https://registry.npmjs.org/
+  npm config delete proxy
+  npm config delete https-proxy
+  ```
+- Si el puerto 4000 o 5173 está ocupado, cambia `PORT` en `server/.env` y/o puerto de Vite en `apps/frontend/vite.config.ts`.
+- Si Prisma no encuentra la BD, confirma que `DATABASE_URL` quede exactamente como `file:./dev.db` en `server/.env`.
