@@ -1,0 +1,127 @@
+1) Clonar el repositorio
+(recomendado):
+git clone -b nombre-del-branch https://github.com/usuario/proyecto.git
+
+2) Instalar dependencias
+En la carpeta raíz post:
+
+npm install
+
+
+Luego instala también en backend y frontend por separado (recomendado):
+
+Backend
+cd server
+npm install
+
+Frontend
+cd ..\apps\frontend
+npm install
+
+3) Configurar variables de entorno
+A) Backend .env
+
+En:
+post\server\
+
+Crea .env (copiando el ejemplo):
+
+cd C:\Users\USER\Documents\post\server
+copy .env.example .env
+
+
+Edita post\server\.env y asegúrate de que quede así:
+
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="pon_una_clave_larga_aqui"
+PORT=4000
+
+B) Frontend .env
+
+En:
+post\apps\frontend\
+
+Crea .env con:
+
+VITE_API_URL=http://localhost:4000/api
+
+
+(IMPORTANTE: ese /api es necesario)
+
+4) Preparar base de datos (Prisma)
+
+En CMD:
+
+cd C:\Users\USER\Documents\post\server
+npx prisma migrate dev --name init
+npm run prisma:seed
+npx prisma generate
+
+
+✅ Esto crea la DB SQLite local dev.db y carga admin + productos ejemplo.
+
+5) Ejecutar el backend
+
+En una terminal (CMD) deja corriendo:
+
+cd C:\Users\USER\Documents\post\server
+npm run dev
+
+
+Debe decir:
+Server ready on 4000
+
+6) Ejecutar el frontend
+
+Abre otra terminal (CMD):
+
+cd C:\Users\USER\Documents\post\apps\frontend
+npm run dev
+
+
+Te mostrará una URL como:
+http://localhost:5173
+
+Ábrela.
+
+7) Credenciales de acceso
+
+Usuario: admin@sistetecni.local
+
+Contraseña: Admin123*
+
+
+
+✅ Checklist de solución de problemas
+“No conecta al backend”
+
+Revisa que el backend esté vivo:
+
+curl http://localhost:4000
+
+
+Debe responder “Cannot GET /” (eso está bien).
+
+Login no funciona
+
+Prueba directo:
+
+curl -X POST http://localhost:4000/api/auth/login ^
+  -H "Content-Type: application/json" ^
+  -d "{\"email\":\"admin@sistetecni.local\",\"password\":\"Admin123*\"}"
+
+
+Debe devolver token.
+
+Prisma falla
+
+Asegúrate de estar en post\server
+
+Asegúrate de tener .env creado
+
+(Opcional) Abrir Prisma Studio
+
+Para ver la base de datos:
+
+cd post\server
+npx prisma studio
